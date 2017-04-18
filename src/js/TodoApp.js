@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import cookie from 'react-cookie';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
@@ -30,6 +31,28 @@ class TodoApp extends Component {
     this.handleCreateItem = this.handleCreateItem.bind(this);
     this.handleCheck = this.handleCheck.bind(this);
     this.handleDeleteItem = this.handleDeleteItem.bind(this);
+  }
+
+  componentWillMount() {
+    const cookiesState = cookie.load('state');
+    if (cookiesState) this.state = cookiesState;
+    this.setState({
+      showUnfinished: true,
+      showFinished: true,
+    });
+  }
+  componentDidMount() {
+    this.saveCookie();
+  }
+
+  componentDidUpdate() {
+    this.saveCookie();
+  }
+
+  saveCookie() {
+    cookie.save('state', this.state, {
+      path: '/',
+    });
   }
 
   handleCreateList(e) {
@@ -146,29 +169,14 @@ class TodoApp extends Component {
     const unfin = this.state.showUnfinished;
     return (
       <div className="TodoApp">
-        <div>
-          <h1>TODO</h1>
-        </div>
-
         <div className="header">
-          <div className="trivial" />
-          <div className="main">
-            <TextField
-              hintText="New List"
-              value={this.state.newListName}
-              onChange={(e) => {
-                this.setState({
-                  newListName: e.target.value,
-                });
-              }}
-              onKeyUp={this.handleCreateList}
-            />
-            <CountDisplay count={count} />
+          <div>
+            <h1>TODO</h1>
           </div>
-
           <div className="toggle">
             <Toggle
               label="Complete"
+              labelStyle={{ color: 'white' }}
               labelPosition="right"
               toggled={this.state.showFinished}
               onTouchTap={() => {
@@ -179,6 +187,7 @@ class TodoApp extends Component {
             />
             <Toggle
               label="Unfinished"
+              labelStyle={{ color: 'white' }}
               labelPosition="right"
               toggled={this.state.showUnfinished}
               onTouchTap={() => {
@@ -188,6 +197,22 @@ class TodoApp extends Component {
               }}
             />
           </div>
+        </div>
+
+        <div className="main">
+          <TextField
+            hintText="New List"
+            hintStyle={{ color: 'grey' }}
+            inputStyle={{ color: 'white' }}
+            value={this.state.newListName}
+            onChange={(e) => {
+              this.setState({
+                newListName: e.target.value,
+              });
+            }}
+            onKeyUp={this.handleCreateList}
+          />
+          <CountDisplay count={count} />
         </div>
 
         <ul className="Lists">

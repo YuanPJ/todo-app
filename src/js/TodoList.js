@@ -1,17 +1,22 @@
 import React, { Component } from 'react';
 import AppBar from 'material-ui/AppBar';
 import Checkbox from 'material-ui/Checkbox';
+import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
-import {List, ListItem} from 'material-ui/List';
+import { List, ListItem } from 'material-ui/List';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import TextField from 'material-ui/TextField';
-import '../css/TodoList.css';
-import TodoItem from './TodoItem';
 
 class TodoList extends Component {
   constructor() {
-    super();
+    super('foo');
+    this.state = {
+      open: false,
+    };
+    this.handleClose = this.handleClose.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
   }
 
   title() {
@@ -22,6 +27,7 @@ class TodoList extends Component {
       name = (
         <TextField
           autoFocus
+          fullWidth
           value={content.listName}
           onChange={e => this.props.handleEditName(id, e.target.value)}
           onKeyUp={(e) => {
@@ -38,13 +44,6 @@ class TodoList extends Component {
       );
     } else {
       name = content.listName;
-      // name = (<span style={styles.title}>Title</span>)
-      /* name = (
-        <FlatButton
-          label={content.listName}
-          onTouchTap={() => this.props.handleChangeTitleType(id)}
-        />
-      );*/
     }
     return (
       <div>
@@ -53,10 +52,18 @@ class TodoList extends Component {
     );
   }
 
+  handleOpen() {
+    this.setState({ open: true });
+  }
+
+  handleClose() {
+    this.setState({ open: false });
+  }
+
   render() {
     const n = this.props.content.todoItem.length;
     const items = this.props.content.todoItem;
-    let list = [];
+    const list = [];
     for (let j = 0; j < n; j += 1) {
       if (items[j].finished && this.props.fin) {
         list.push(j);
@@ -64,6 +71,24 @@ class TodoList extends Component {
         list.push(j);
       }
     }
+
+
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary
+        onTouchTap={this.handleClose}
+      />,
+      <RaisedButton
+        label="Delete"
+        secondary
+        onTouchTap={() => {
+          this.props.handleDeleteList(this.props.id);
+          this.handleClose();
+        }}
+      />,
+    ];
+
     return (
       <div className="list-container">
         <AppBar
@@ -71,13 +96,24 @@ class TodoList extends Component {
           onTitleTouchTap={() => this.props.handleChangeTitleType(this.props.id)}
           iconElementLeft={
             <IconButton
-              onTouchTap={() => this.props.handleDeleteList(this.props.id)}
+              // onTouchTap={() => this.props.handleDeleteList(this.props.id)}
+              onTouchTap={this.handleOpen}
             >
               <NavigationClose />
             </IconButton>
           }
         />
 
+        <Dialog
+          title="Want to delete?"
+          actions={actions}
+          modal={false}
+          open={this.state.open}
+          onRequestClose={this.handleClose}
+        >
+        Are you sure you want to delete the list?
+        The deletion cannot be recovered.
+        </Dialog>
         <div className="list">
           <TextField
             hintText="New Item"
@@ -92,10 +128,10 @@ class TodoList extends Component {
             }}
           />
 
-          <List>
+          <List className="List">
             {list.map(i =>
               <ListItem
-                leftCheckbox={
+                leftIcon={
                   // For some reason, there is shifting between click point and checkbox outline
                   // To solve this problem, I go to node_modules/material-ui/svg-icons/toggle
                   // in ./check-box.js, add in contruct func.
@@ -104,9 +140,9 @@ class TodoList extends Component {
                   // props.style.position = 'absolute';
                   <Checkbox
                     checked={this.props.content.todoItem[i].finished}
-                    onTouchTap={() => this.props.handleCheck(this.props.id, i)}
                   />
                 }
+                onTouchTap={() => this.props.handleCheck(this.props.id, i)}
                 id={i}
                 primaryText={this.props.content.todoItem[i].itemName}
                 rightIconButton={
@@ -124,5 +160,30 @@ class TodoList extends Component {
     );
   }
 }
+
+
+const p = React.PropTypes;
+
+TodoList.propTypes = {
+  id: p.number.isRequired,
+  content: p.shape({
+    listName: p.string.isRequired,
+    todoItem: p.arrayOf(p.shape({
+      itemName: p.string.isRequired,
+      finished: p.bool.isRequired,
+    })).isRequired,
+    editingName: p.bool.isRequired,
+    inputName: p.string.isRequired,
+  }).isRequired,
+  fin: p.bool.isRequired,
+  unfin: p.bool.isRequired,
+  handleChangeTitleType: p.func.isRequired,
+  handleEditName: p.func.isRequired,
+  handleDeleteList: p.func.isRequired,
+  handleChangeItemName: p.func.isRequired,
+  handleCreateItem: p.func.isRequired,
+  handleCheck: p.func.isRequired,
+  handleDeleteItem: p.func.isRequired,
+};
 
 export default TodoList;

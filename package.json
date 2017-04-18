@@ -6,6 +6,7 @@
   "dependencies": {
     "material-ui": "^0.17.2",
     "react": "^15.5.3",
+    "react-cookie": "^1.0.5",
     "react-dom": "^15.5.3",
     "react-tap-event-plugin": "^2.0.1"
   },

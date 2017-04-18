@@ -20,7 +20,7 @@
 
 .header {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
 }
 
 .trivial {
@@ -28,20 +28,35 @@
 }
 
 .toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  margin-left: 20px;
   width: 12.5%;
 }
 
 /**************
   Gloval Styles
 **************/
+h1{
+  color: white;
+}
+
 li {
   margin: 5px;
+}
+
+body {
+   background-image:url(./background_mobile.jpg);
+   background-attachment: fixed;
+   background-repeat: no-repeat;
+   height: 100%;
+   width: auto;
 }
 
 /**************
   List Styles
 **************/
-
 .Lists {
   display: flex;
   flex-wrap: wrap;
@@ -50,10 +65,7 @@ li {
 
 .list {
   padding: 5px;
-  border-style: solid;
-  border-width: 2px;
-  border-color: lightgray;
-  border-top: none;
+  background-color: rgba(100%,100%,100%,0.5);
 }
 
 @keyframes App-logo-spin {
@@ -61,3 +73,12 @@ li {
   to { transform: rotate(360deg); }
 }
 
+@media (min-width: 480px) {
+  body {
+    background-image:url(./background.jpg);
+    background-position: left;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
